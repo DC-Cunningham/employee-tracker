@@ -192,15 +192,19 @@ function employeeRole() {
         message: "What role do they have?",
       },
     ])
-  .then
+  .then(function (answer) {
   connection.query(
-    "UPDATE employee SET role_id = (select id from role where title=?) WHERE last_name = ?;",[answer.role, answer.editEmployee]
+    "UPDATE employee SET role_id = (select id from role where title=?) WHERE last_name = ?;",[answer.role, answer.editEmployee],
+
     function (err, res) {
       if (err) throw err;
-      console.log(res);
+      console.log("----------------------------")
+      console.log(answer.editEmployee + " has had their role updated.");
+      console.log("----------------------------")
       init()
     }
   );
+})
 }
 
 function employeeManager() {
