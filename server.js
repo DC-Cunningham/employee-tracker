@@ -88,7 +88,7 @@ function init() {
 
 function viewEmployees() {
   connection.query(
-    'SELECT e.first_name AS FIRST_NAME, e.last_name AS LAST_NAME, r.title AS ROLE, r.salary AS SALARY, CONCAT(f.first_name, " ", f.last_name) AS MANAGER from employee e JOIN employee f ON e.manager_id = f.id JOIN role r ON e.role_id = r.id;',
+    'SELECT e.first_name AS FIRST_NAME, e.last_name AS LAST_NAME, r.title AS ROLE, department.name AS DEPARTMENT, r.salary AS SALARY, CONCAT(f.first_name, " ", f.last_name) AS MANAGER from employee e LEFT JOIN employee f ON e.manager_id = f.id JOIN role r ON e.role_id = r.id JOIN department ON r.department_id = department.id;',
     function (err, res) {
       if (err) throw err;
 
@@ -101,7 +101,7 @@ function viewEmployees() {
 
 function viewEmployeesDept() {
   connection.query(
-    "select first_name, last_name, title, salary from employee RIGHT JOIN role ON employee.role_id = role.id as ORDER BY department;",
+    'SELECT e.first_name AS FIRST_NAME, e.last_name AS LAST_NAME, r.title AS ROLE, department.name AS DEPARTMENT, r.salary AS SALARY, CONCAT(f.first_name, " ", f.last_name) AS MANAGER from employee e LEFT JOIN employee f ON e.manager_id = f.id JOIN role r ON e.role_id = r.id JOIN department ON r.department_id = department.id ORDER BY department.name;',
     function (err, res) {
       if (err) throw err;
 
