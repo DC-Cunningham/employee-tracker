@@ -146,6 +146,7 @@ function addEmployee() {
           if (err) throw err;
           console.log("----------------------------");
           console.log(answer.firstName + " has been added to the database.");
+          viewEmployees();
           console.log("----------------------------");
           init();
         }
@@ -154,10 +155,17 @@ function addEmployee() {
 }
 
 function deleteEmployee() {
-  employeeSearch()
+  inquirer
+    .prompt([
+      {
+        name: "deleteEmployee",
+        type: "input",
+        message: "What is the last name of the employees you would like to delete?",
+      },
+    ])
   .then(function (answer) {
     connection.query(
-    "DELETE FROM employee WHERE ?",
+    "DELETE FROM employee WHERE last_name = ?",
         {
          id : answer.deleteEmployee
         },
