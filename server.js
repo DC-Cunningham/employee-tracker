@@ -164,15 +164,14 @@ function deleteEmployee() {
       },
     ])
   .then(function (answer) {
+    console.log(answer.deleteEmployee)
     connection.query(
     "DELETE FROM employee WHERE last_name = ?",
-        {
-         id : answer.deleteEmployee
-        },
+        [answer.deleteEmployee],
         function(err, res) {
           if (err) throw err;
           console.log("----------------------------")
-          console.log(res.affectedRows + " has been deleted from the database.");
+          console.log(answer.deleteEmployee + " has been deleted from the database.");
           console.log("----------------------------")
           init()
     }
