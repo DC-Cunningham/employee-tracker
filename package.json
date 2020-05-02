@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node employees",
-    "watch": "nodemon employees"
+    "start": "node server",
+    "watch": "nodemon server"
   },
   "author": "",
   "license": "ISC",
