@@ -91,8 +91,6 @@ function viewEmployees() {
     'SELECT e.first_name AS FIRST_NAME, e.last_name AS LAST_NAME, r.title AS ROLE, department.name AS DEPARTMENT, r.salary AS SALARY, CONCAT(f.first_name, " ", f.last_name) AS MANAGER from employee e LEFT JOIN employee f ON e.manager_id = f.id JOIN role r ON e.role_id = r.id JOIN department ON r.department_id = department.id;',
     function (err, res) {
       if (err) throw err;
-
-      // Log all results of the SELECT statement
       console.table(res);
       init()
     }
@@ -104,23 +102,19 @@ function viewEmployeesDept() {
     'SELECT e.first_name AS FIRST_NAME, e.last_name AS LAST_NAME, r.title AS ROLE, department.name AS DEPARTMENT, r.salary AS SALARY, CONCAT(f.first_name, " ", f.last_name) AS MANAGER from employee e LEFT JOIN employee f ON e.manager_id = f.id JOIN role r ON e.role_id = r.id JOIN department ON r.department_id = department.id ORDER BY department.name;',
     function (err, res) {
       if (err) throw err;
-
-      // Log all results of the SELECT statement
       console.table(res);
-      connection.end();
+      init()
     }
   );
 }
 
 function viewEmployeesManager() {
   connection.query(
-    "select first_name, last_name, title, salary from employee RIGHT JOIN role ON employee.role_id = role.id;",
+    'SELECT e.first_name AS FIRST_NAME, e.last_name AS LAST_NAME, r.title AS ROLE, department.name AS DEPARTMENT, r.salary AS SALARY, CONCAT(f.first_name, " ", f.last_name) AS MANAGER from employee e LEFT JOIN employee f ON e.manager_id = f.id JOIN role r ON e.role_id = r.id JOIN department ON r.department_id = department.id ORDER BY f.last_name DESC;',
     function (err, res) {
       if (err) throw err;
-
-      // Log all results of the SELECT statement
-      console.log(res);
-      connection.end();
+      console.table(res);
+      init()
     }
   );
 }
@@ -143,36 +137,39 @@ function addEmployee() {
         type: "input",
         message: "What is the employees' role?",
       },
-      {
-        name: "manager",
-        type: "rawlist",
-        message: "Who is the employees' manager?",
-      },
     ])
     .then(function (answer) {
       connection.query(
-        "SELECT * FROM employee WHERE ?",
-        { employee: answer.song },
+        "INSERT INTO employee (first_name, last_name, role_id) VALUES (?,?,(select id from role where title=?))",
+        [answer.firstName, answer.lastName, answer.role],
         function (err, res) {
           if (err) throw err;
-          console.log(res);
-          connection.end();
+          console.log("----------------------------");
+          console.log(answer.firstName + " has been added to the database.");
+          console.log("----------------------------");
+          init();
         }
       );
     });
 }
 
 function deleteEmployee() {
-  connection.query(
-    "select first_name, last_name, title, salary from employee RIGHT JOIN role ON employee.role_id = role.id;",
-    function (err, res) {
-      if (err) throw err;
-
-      // Log all results of the SELECT statement
-      console.log(res);
-      connection.end();
+  employeeSearch()
+  .then(function (answer) {
+    connection.query(
+    "DELETE FROM employee WHERE ?",
+        {
+         id : answer.deleteEmployee
+        },
+        function(err, res) {
+          if (err) throw err;
+          console.log("----------------------------")
+          console.log(res.affectedRows + " has been deleted from the database.");
+          console.log("----------------------------")
+          init()
     }
   );
+})
 }
 
 function employeeRole() {
@@ -183,7 +180,7 @@ function employeeRole() {
 
       // Log all results of the SELECT statement
       console.log(res);
-      connection.end();
+      init()
     }
   );
 }
@@ -196,7 +193,7 @@ function employeeManager() {
 
       // Log all results of the SELECT statement
       console.log(res);
-      connection.end();
+      init()
     }
   );
 }
@@ -209,7 +206,7 @@ function deleteDepartment() {
 
       // Log all results of the SELECT statement
       console.log(res);
-      connection.end();
+      init()
     }
   );
 }
@@ -222,7 +219,34 @@ function budgetSearch() {
 
       // Log all results of the SELECT statement
       console.log(res);
-      connection.end();
+      init()
     }
   );
 }
+
+function employeeSearch() {
+  inquirer
+    .prompt( [{
+      name: "firstName",
+      type: "input",
+      message: "What is the employees' first name?",
+    },
+    {
+      name: "lastName",
+      type: "input",
+      message: "What is the employees' last name?",
+    }])
+    .then(function(answer) {
+      connection.query(
+        'SELECT e.id, e.first_name AS FIRST_NAME, e.last_name AS LAST_NAME, r.title AS ROLE from employee e LEFT JOIN employee f ON e.manager_id = f.id JOIN role r ON e.role_id = r.id WHERE e.first_name = ? AND e.last_name = ?;',
+         [answer.firstName, answer.lastName],
+         function(err, res) {
+           if (err) 
+           throw err;
+           const selectedEmployee = res;
+        } 
+      )
+
+    });
+}
+
