@@ -164,7 +164,6 @@ function deleteEmployee() {
       },
     ])
   .then(function (answer) {
-    console.log(answer.deleteEmployee)
     connection.query(
     "DELETE FROM employee WHERE last_name = ?",
         [answer.deleteEmployee],
@@ -180,12 +179,24 @@ function deleteEmployee() {
 }
 
 function employeeRole() {
+  inquirer
+    .prompt([
+      {
+        name: "editEmployee",
+        type: "input",
+        message: "What is the last name of the employee you would like to edit?",
+      },
+      {
+        name: "role",
+        type: "input",
+        message: "What role do they have?",
+      },
+    ])
+  .then
   connection.query(
-    "select first_name, last_name, title, salary from employee RIGHT JOIN role ON employee.role_id = role.id;",
+    "UPDATE employee SET role_id = (select id from role where title=?) WHERE last_name = ?;",[answer.role, answer.editEmployee]
     function (err, res) {
       if (err) throw err;
-
-      // Log all results of the SELECT statement
       console.log(res);
       init()
     }
